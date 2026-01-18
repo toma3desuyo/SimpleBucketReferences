@@ -1,23 +1,37 @@
-# 文字列の分割
+---
+title: 文字列の分割
+description: 区切り文字に基づいて文字列を部分に分ける手法
+---
 
 ## 概要
-区切り文字やパターンを基準に文字列を複数の部分に分ける。
+文字列分割は、区切り文字やパターンに従って文字列を複数の部分に分解する操作である。CSV、ログ解析、パス解析などで利用される。
 
-## 振る舞い
-区切りが連続したときに空要素を残すか捨てるか、最大分割数をどう扱うかを仕様に合わせる。
+## 基本例
+```pseudo
+入力 = "a,b,c"
+結果 = 分割(入力, 区切り: ",")  # ["a", "b", "c"]
+```
+- 連続する区切りがあった場合の扱いや空要素の保持/除去を仕様に含める。
 
-## 例
-function split(text, delimiter, max_parts=None):
-  parts = []
-  cursor = 0
-  while max_parts is None or length(parts) < max_parts - 1:
-    pos = find(text, delimiter, cursor)
-    if pos < 0: break
-    parts.append(slice(text, cursor, pos))
-    cursor = pos + length(delimiter)
-  parts.append(slice(text, cursor))
-  return parts
+## 応用パターン
+### 正規表現分割
+```pseudo
+項目 = 分割("key1=value1; key2=value2", 区切り: /[;\s]+/)
+```
+- 空白やセミコロンなど複数の区切りをまとめて指定できる。
 
+### 制限数
+```pseudo
+結果 = 分割(入力, 区切り: ":", 最大: 2)
+```
+- 最初の 2 つだけ分割し、残りを最後の要素にまとめる。パス解析などで便利。
 
 ## 注意点
-正規表現で区切ると空文字一致が起きる場合があるので注意。
+1. **トリム処理**: 分割後の要素に余分な空白が含まれることが多い。オプションで自動トリムする。
+2. **エスケープ**: CSV のように区切り文字が値に含まれる場合、エスケープや引用符のルールを適用する。
+3. **文字エンコード**: マルチバイト区切り（例えば絵文字）でも正しく分割できるようにする。
+
+## 関連トピック
+- `abstract/string-search/index.md`: 区切り検出
+- `abstract/list-join/index.md`: 分割の逆操作
+- `abstract/regular-expression/index.md`: パターン分割
